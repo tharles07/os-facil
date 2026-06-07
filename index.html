@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OS Fácil - Sistema de Ordens de Serviço</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">OS Fácil</h1>
+                <nav class="nav">
+                    <a href="#home" class="nav-link active">Início</a>
+                    <a href="#ordens" class="nav-link">Ordens</a>
+                    <a href="#clientes" class="nav-link">Clientes</a>
+                    <a href="#relatorios" class="nav-link">Relatórios</a>
+                </nav>
+                <button class="btn-user">👤 Perfil</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <ul class="menu">
+            <li><a href="#" class="menu-item active">📊 Dashboard</a></li>
+            <li><a href="#" class="menu-item">➕ Nova OS</a></li>
+            <li><a href="#" class="menu-item">📋 Minhas OS</a></li>
+            <li><a href="#" class="menu-item">👥 Clientes</a></li>
+            <li><a href="#" class="menu-item">⚙️ Configurações</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Page Title -->
+            <section class="page-header">
+                <h2>Dashboard</h2>
+                <p>Bem-vindo ao sistema de ordens de serviço</p>
+            </section>
+
+            <!-- Stats Cards -->
+            <section class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon">📝</div>
+                    <div class="stat-info">
+                        <h3>Total de OS</h3>
+                        <p class="stat-number">24</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-info">
+                        <h3>Em Andamento</h3>
+                        <p class="stat-number">8</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <h3>Concluídas</h3>
+                        <p class="stat-number">14</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-info">
+                        <h3>Atrasadas</h3>
+                        <p class="stat-number">2</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Table Section -->
+            <section class="table-section">
+                <div class="section-header">
+                    <h3>Ordens de Serviço Recentes</h3>
+                    <div class="search-bar">
+                        <input type="text" id="searchInput" placeholder="Buscar OS...">
+                        <button class="btn-search">🔍</button>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Descrição</th>
+                                <th>Data</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td>#001</td>
+                                <td>João Silva</td>
+                                <td>Reparo de impressora</td>
+                                <td>15/06/2026</td>
+                                <td><span class="badge badge-pending">Pendente</span></td>
+                                <td>
+                                    <button class="btn-small btn-edit">✏️ Editar</button>
+                                    <button class="btn-small btn-delete">🗑️ Deletar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#002</td>
+                                <td>Maria Santos</td>
+                                <td>Manutenção de rede</td>
+                                <td>14/06/2026</td>
+                                <td><span class="badge badge-in-progress">Em Andamento</span></td>
+                                <td>
+                                    <button class="btn-small btn-edit">✏️ Editar</button>
+                                    <button class="btn-small btn-delete">🗑️ Deletar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#003</td>
+                                <td>Pedro Oliveira</td>
+                                <td>Instalação de software</td>
+                                <td>13/06/2026</td>
+                                <td><span class="badge badge-completed">Concluída</span></td>
+                                <td>
+                                    <button class="btn-small btn-edit">✏️ Editar</button>
+                                    <button class="btn-small btn-delete">🗑️ Deletar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#004</td>
+                                <td>Ana Costa</td>
+                                <td>Suporte técnico</td>
+                                <td>12/06/2026</td>
+                                <td><span class="badge badge-delayed">Atrasada</span></td>
+                                <td>
+                                    <button class="btn-small btn-edit">✏️ Editar</button>
+                                    <button class="btn-small btn-delete">🗑️ Deletar</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Form Section -->
+            <section class="form-section">
+                <h3>Criar Nova Ordem de Serviço</h3>
+                <form id="osForm" class="form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="cliente">Cliente *</label>
+                            <input type="text" id="cliente" required placeholder="Nome do cliente">
+                        </div>
+                        <div class="form-group">
+                            <label for="descricao">Descrição *</label>
+                            <textarea id="descricao" required placeholder="Descreva o serviço"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="data">Data *</label>
+                            <input type="date" id="data" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Status *</label>
+                            <select id="status" required>
+                                <option value="">Selecione um status</option>
+                                <option value="pending">Pendente</option>
+                                <option value="in-progress">Em Andamento</option>
+                                <option value="completed">Concluída</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">📝 Criar OS</button>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 OS Fácil. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
