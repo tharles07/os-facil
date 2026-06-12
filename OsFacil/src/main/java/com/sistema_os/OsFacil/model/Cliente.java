@@ -12,6 +12,11 @@ public class Cliente {
     private String nome;
     private String telefone;
 
+    @ManyToOne
+    @JoinColumn(name = "empresa_id")
+    private Empresa empresa;
+    
+
     public Cliente() {}
 
     public Long getId() { return id; }
@@ -22,4 +27,8 @@ public class Cliente {
 
     public String getTelefone() { return telefone; }
     public void setTelefone(String telefone) { this.telefone = telefone; }
+
+    public Empresa getEmpresa() { return empresa; }
+    public void setEmpresa(Empresa empresa) { this.empresa = empresa; }
+
 }

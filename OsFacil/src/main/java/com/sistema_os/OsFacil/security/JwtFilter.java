@@ -4,12 +4,14 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -21,14 +23,14 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain)
             throws ServletException, IOException {
 
         String path = request.getServletPath();
 
-        // 🔥 IGNORA /auth/login
         if (path.startsWith("/auth")) {
             filterChain.doFilter(request, response);
             return;
@@ -41,14 +43,30 @@ public class JwtFilter extends OncePerRequestFilter {
             String token = header.substring(7);
 
             if (jwtUtil.validarToken(token)) {
+
                 String username = jwtUtil.extrairUsername(token);
+                String perfil = jwtUtil.extrairPerfil(token);
+                Long empresaId = jwtUtil.extrairEmpresaId(token);
+
+                if (perfil == null || perfil.isBlank()) {
+                    perfil = "USER";
+                }
 
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(
-                                username, null, Collections.emptyList()
+                                username,
+                                null,
+                                List.of(
+                                        new SimpleGrantedAuthority(
+                                                "ROLE_" + perfil.toUpperCase(Locale.ROOT)
+                                        )
+                                )
                         );
 
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                auth.setDetails(empresaId);
+
+                SecurityContextHolder.getContext()
+                        .setAuthentication(auth);
             }
         }
 

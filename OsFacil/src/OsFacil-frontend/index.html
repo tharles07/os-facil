@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OS Fácil - Sistema SaaS</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">🔧</div>
+            <h2>OS Fácil</h2>
+        </div>
+
+        <nav>
+            <a href="#" onclick="abrirTela('dashboard')" class="nav-item active">
+                <span class="icon">📊</span>
+                <span class="label">Dashboard</span>
+            </a>
+            <a href="#" onclick="abrirTela('novaOs')" class="nav-item">
+                <span class="icon">➕</span>
+                <span class="label">Nova OS</span>
+            </a>
+            <a href="#" onclick="abrirTela('ordens')" class="nav-item">
+                <span class="icon">📋</span>
+                <span class="label">Ordens</span>
+            </a>
+            <a href="#" onclick="abrirTela('clientes')" class="nav-item">
+                <span class="icon">👥</span>
+                <span class="label">Clientes</span>
+            </a>
+            <a href="#" onclick="abrirTela('config')" class="nav-item">
+                <span class="icon">⚙️</span>
+                <span class="label">Configurações</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="main">
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 id="tituloPagina">Dashboard</h1>
+            </div>
+            <div class="topbar-right">
+                <div class="user-info">
+                    <span class="user-avatar">👤</span>
+                    <span id="userName" class="user-name">Admin</span>
+                </div>
+                <button class="btn-logout" onclick="logout()">Sair</button>
+            </div>
+        </header>
+
+        <!-- DASHBOARD -->
+        <section id="dashboard" class="pagina ativa">
+            <div class="dashboard-header">
+                <h2>Resumo do Sistema</h2>
+                <p>Acompanhe as métricas da sua empresa em tempo real</p>
+            </div>
+
+            <section class="cards">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <span class="card-icon">📦</span>
+                        <h3>Total de OS</h3>
+                    </div>
+                    <p id="totalOS" class="card-value">0</p>
+                    <span class="card-footer">Ordens cadastradas</span>
+                </div>
+
+                <div class="card card-success">
+                    <div class="card-header">
+                        <span class="card-icon">✅</span>
+                        <h3>Abertas</h3>
+                    </div>
+                    <p id="abertos" class="card-value">0</p>
+                    <span class="card-footer">Aguardando execução</span>
+                </div>
+
+                <div class="card card-warning">
+                    <div class="card-header">
+                        <span class="card-icon">⏳</span>
+                        <h3>Finalizadas</h3>
+                    </div>
+                    <p id="finalizados" class="card-value">0</p>
+                    <span class="card-footer">Ordens concluídas</span>
+                </div>
+
+                <div class="card card-danger">
+                    <div class="card-header">
+                        <span class="card-icon">⚠️</span>
+                        <h3>Atrasadas</h3>
+                    </div>
+                    <p id="atrasadas" class="card-value">0</p>
+                    <span class="card-footer">Requer atenção</span>
+                </div>
+            </section>
+        </section>
+
+        <!-- NOVA OS -->
+        <section id="novaOs" class="pagina" style="display:none;">
+            <div class="section-header">
+                <h2>📝 Criar Nova Ordem de Serviço</h2>
+                <p>Preencha os dados abaixo para criar uma nova OS</p>
+            </div>
+
+            <div class="form-container">
+                <form id="osForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cliente">Cliente *</label>
+                            <select id="cliente" required>
+                                <option value="">Selecione um cliente</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="valor">Valor (R$) *</label>
+                            <input type="number" id="valor" placeholder="0.00" step="0.01" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group full">
+                        <label for="descricao">Descrição *</label>
+                        <textarea id="descricao" placeholder="Descreva o serviço a ser realizado..." rows="4" required></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            💾 Salvar Ordem de Serviço
+                        </button>
+                        <button type="reset" class="btn btn-secondary">Limpar</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- ORDENS -->
+        <section id="ordens" class="pagina" style="display:none;">
+            <div class="section-header">
+                <h2>📋 Ordens de Serviço</h2>
+                <p>Gerencie todas as suas ordens de serviço</p>
+            </div>
+
+            <div class="table-section">
+                <div class="table-toolbar">
+                    <input 
+                        id="searchInput" 
+                        class="search-input" 
+                        placeholder="🔍 Buscar por cliente, descrição..."
+                        type="text">
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Descrição</th>
+                                <th>Data</th>
+                                <th>Valor</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- CLIENTES -->
+        <section id="clientes" class="pagina" style="display:none;">
+            <div class="section-header">
+                <h2>👥 Clientes</h2>
+                <p>Visualize todos os seus clientes cadastrados</p>
+            </div>
+
+            <div class="table-section">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Telefone</th>
+                                <th>OS Associadas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientesTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONFIGURAÇÕES -->
+        <section id="config" class="pagina" style="display:none;">
+            <div class="section-header">
+                <h2>⚙️ Configurações</h2>
+                <p>Gerencie as configurações de sua conta</p>
+            </div>
+
+            <div class="config-container">
+                <div class="config-section">
+                    <h3>👤 Informações da Conta</h3>
+                    <div class="config-item">
+                        <span class="label">Perfil de Acesso:</span>
+                        <span id="perfilUsuario" class="value">-</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="label">ID da Empresa:</span>
+                        <span id="empresaUsuario" class="value">-</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="label">Plano:</span>
+                        <span class="value badge badge-primary">FREE</span>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3>🔐 Sessão</h3>
+                    <button class="btn btn-danger" onclick="logout()">
+                        🚪 Encerrar Sessão
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script src="javaScript/script.js"></script>
+</body>
+</html>

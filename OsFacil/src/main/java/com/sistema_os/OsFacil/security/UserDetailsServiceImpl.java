@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Locale;
+
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -23,10 +25,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Usuario usuario = repository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
 
+        String perfil = usuario.getPerfil() == null || usuario.getPerfil().isBlank()
+                ? "USER"
+                : usuario.getPerfil().toUpperCase(Locale.ROOT);
+
         return User.builder()
                 .username(usuario.getUsername())
                 .password(usuario.getPassword())
-                .roles("USER")
+                .roles(perfil)
                 .build();
     }
 }

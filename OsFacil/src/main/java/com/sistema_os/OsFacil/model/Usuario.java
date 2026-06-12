@@ -1,32 +1,42 @@
 package com.sistema_os.OsFacil.model;
 
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 
 @Entity
 public class Usuario {
 
     @Id
-    @GeneratedValue(strategy =  GenerationType.IDENTITY)
-    private  Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private  String username;
+    @Column(nullable = false, unique = true)
+    private String username;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
+    private String perfil;
+   
+
+    @ManyToOne
+    @JoinColumn(name = "empresa_id")
+    private Empresa empresa;
 
     public Long getId() {
         return id;
     }
 
-    public String getPassword() {
-        return password;
+    public Empresa getEmpresa() {
+        return empresa;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setEmpresa(Empresa empresa) {
+        this.empresa = empresa;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUsername() {
@@ -37,7 +47,19 @@ public class Usuario {
         this.username = username;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPerfil() {
+        return perfil;
+    }
+
+    public void setPerfil(String perfil) {
+        this.perfil = perfil;
     }
 }

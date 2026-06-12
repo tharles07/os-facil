@@ -2,64 +2,141 @@ package com.sistema_os.OsFacil.service;
 
 import com.sistema_os.OsFacil.model.Chamado;
 import com.sistema_os.OsFacil.model.Cliente;
+import com.sistema_os.OsFacil.model.Empresa;
 import com.sistema_os.OsFacil.repository.ChamadoRepository;
 import com.sistema_os.OsFacil.repository.ClienteRepository;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
+
 @Service
 public class ChamadoService {
 
-    private final ChamadoRepository chamadoRepository;
+    private final ChamadoRepository repository;
     private final ClienteRepository clienteRepository;
 
-    public ChamadoService(ChamadoRepository chamadoRepository,
-                          ClienteRepository clienteRepository) {
-        this.chamadoRepository = chamadoRepository;
+    public ChamadoService(ChamadoRepository repository, ClienteRepository clienteRepository) {
+        this.repository = repository;
         this.clienteRepository = clienteRepository;
     }
 
-    public Chamado salvar(Chamado chamado){
+    /* ==========================
+       PEGAR EMPRESA DO TOKEN
+    ========================== */
+    private Long getEmpresaId() {
+        Object details = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getDetails();
 
-        if (chamado.getCliente() == null){
-            throw new RuntimeException("Cliente obrigatorio");
+        if (details == null) {
+            throw new RuntimeException("Empresa não identificada");
         }
 
-        Long clienteId = chamado.getCliente().getId();
-
-        Cliente cliente = clienteRepository.findById(clienteId)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
-
-        chamado.setCliente(cliente);
-
-        chamado.setData(LocalDate.now());
-        chamado.setStatus("ABERTO");
-
-        return chamadoRepository.save(chamado);
+        return ((Number) details).longValue();
     }
 
-    public Chamado finalizar(Long id){
+    /* ==========================
+       CRIAR
+    ========================== */
+    public Chamado salvar(Chamado chamado) {
 
-        Chamado chamado = chamadoRepository.findById(id)
+        Long empresaId = getEmpresaId();
+
+        if (chamado.getCliente() == null || chamado.getCliente().getId() == null) {
+            throw new RuntimeException("Cliente obrigatório");
+        }
+
+        Cliente cliente = clienteRepository.findById(chamado.getCliente().getId())
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+
+        if (cliente.getEmpresa() == null || !Long.valueOf(cliente.getEmpresa().getId()).equals(empresaId)) {
+            throw new RuntimeException("Cliente não pertence à empresa autenticada");
+        }
+
+        Empresa empresa = new Empresa();
+        empresa.setId(empresaId);
+
+        if (chamado.getData() == null) {
+            chamado.setData(LocalDate.now());
+        }
+
+        if (chamado.getStatus() == null || chamado.getStatus().isBlank()) {
+            chamado.setStatus("ABERTO");
+        }
+
+        if (chamado.getPago() == null) {
+            chamado.setPago(false);
+        }
+
+        chamado.setCliente(cliente);
+        chamado.setEmpresa(empresa);
+        return repository.save(chamado);
+
+    }
+
+    /* ==========================
+       LISTAR POR EMPRESA
+    ========================== */
+    public List<Chamado> listarPorEmpresa() {
+
+        Long empresaId = getEmpresaId();
+
+        return repository.findByEmpresaId(empresaId);
+    }
+
+    /* ==========================
+       BUSCAR SEGURO
+    ========================== */
+    public Chamado buscarPorIdSeguro(Long id) {
+
+        Long empresaId = getEmpresaId();
+
+        Chamado chamado = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Chamado não encontrado"));
 
-        // 🔥 REGRA ANTI-ERRO (evita 409)
-        if ("FINALIZADO".equals(chamado.getStatus())) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Chamado já está finalizado"
-            );
+        if (chamado.getEmpresa() == null) {
+            throw new RuntimeException("Chamado sem empresa");
         }
+
+        if (!Long.valueOf(chamado.getEmpresa().getId()).equals(empresaId)) {
+            throw new RuntimeException("Acesso negado");
+        }
+
+        return chamado;
+    }
+
+    /* ==========================
+       FINALIZAR
+    ========================== */
+    public Chamado finalizar(Long id) {
+
+        Chamado chamado = buscarPorIdSeguro(id);
 
         chamado.setStatus("FINALIZADO");
 
-        return chamadoRepository.save(chamado);
+        return repository.save(chamado);
     }
 
-    public List<Chamado> listar(){
-        return chamadoRepository.findAll();
+    /* ==========================
+       ATUALIZAR
+    ========================== */
+    public Chamado atualizar(Long id, Chamado novo) {
+
+        Chamado chamado = buscarPorIdSeguro(id);
+
+        chamado.setDescricao(novo.getDescricao());
+        chamado.setValor(novo.getValor());
+        chamado.setPago(novo.getPago());
+
+        return repository.save(chamado);
+    }
+
+    /* ==========================
+       EXCLUIR (ADMIN ONLY depois você pode melhorar)
+    ========================== */
+    public void excluir(Long id) {
+        repository.deleteById(id);
     }
 }
